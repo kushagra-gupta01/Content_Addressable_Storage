@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-//TCPpeer represents the remote node over a TCP established connection. 
+//TCPpeer represents the remote node over a TCP established connection.
 type TCPpeer struct{
 	//conn is the underlying connection of the peer
 	conn net.Conn
@@ -27,7 +27,7 @@ type TCPTransport struct {
 	listenAddress string
 	listener      net.Listener
 	handshakeFunc	HandshakeFunc
-	//decoder				Decoder
+	decoder				Decoder
 
 	mu 						sync.RWMutex
 	peers 				map[string]Peer
@@ -59,17 +59,27 @@ func (t *TCPTransport)startAcceptLoop(){
 		if err!=nil{
 			fmt.Printf("TCP accept error: %s\n", err)
 		}
+		fmt.Printf("new incomming connection: %+v\n",conn)
 		go t.handleConn(conn)
 	}
 }
 
+type Temp struct{}
+
 func (t *TCPTransport)handleConn(conn net.Conn){
+
+	peer:= NewTCPpeer(conn,true)
 
 	if err := t.handshakeFunc(conn);err!=nil{
 		return
 	}
 
-	peer:= NewTCPpeer(conn,true)
-
-	fmt.Printf("New incomming connection: %+v\n",peer)
+	//Read Loop
+	msg :=&Temp{}
+	for{
+		if err := t.decoder.Decode(conn,msg);err!=nil{
+			fmt.Printf("TCP error: %s\n",err)
+			continue
+		}
+	}
 }
