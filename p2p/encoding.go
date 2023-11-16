@@ -6,18 +6,18 @@ import (
 )
 
 type Decoder interface {
-	Decode(io.Reader,*Message) error
+	Decode(io.Reader,*RPC) error
 }
 
 type GOBdecoder struct{}
 
-func (dec GOBdecoder) Decode(r io.Reader, msg *Message) error{
+func (dec GOBdecoder) Decode(r io.Reader, msg *RPC) error{
 	return gob.NewDecoder(r).Decode(msg)
 }
 
 type Defaultdecoder struct{}
 
-func (dec Defaultdecoder) Decode(r io.Reader,msg *Message) error{
+func (dec Defaultdecoder) Decode(r io.Reader,msg *RPC) error{
 	buf := make([]byte, 1024)
 
 	n,err:= r.Read(buf)

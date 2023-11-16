@@ -7,7 +7,7 @@ import(
 
 //Peer is an interface that represents a remote node
 type Peer interface{
-
+	Close() error
 }
 
 
@@ -16,5 +16,6 @@ type Peer interface{
 //the form(TCP, UDP, WebSockets,...) 
 type Transport interface{
 	ListenAndAccept() error
+	Consume() <-chan RPC
 }
 
