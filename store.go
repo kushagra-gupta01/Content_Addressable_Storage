@@ -43,10 +43,6 @@ type StoreOpts struct {
 	PathTransformFunc PathTransformFunc
 }
 
-var DefautPathTransformFunc = func (key string) string  {
-	return key
-}
-
 type Store struct {
 	StoreOpts
 }
