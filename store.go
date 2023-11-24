@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strings"
 )
@@ -54,6 +55,16 @@ func NewStore(opts StoreOpts) *Store {
 	}
 }
 
+func (s *Store) delete(key string) error{
+	pathKey := s.PathTransformFunc(key)
+
+	defer func(){
+		log.Printf("deleted [%s] from disk", pathKey.FileName)
+	}()
+
+	return os.RemoveAll(pathKey.FullPath())
+}
+
 func (s *Store) read(key string) (io.Reader, error){
 	f,err := s.readStream(key)
 	if err!=nil{
@@ -94,7 +105,7 @@ func (s *Store) writeStream(key string, r io.Reader) error {
 		return err
 	} 
 	
-	fmt.Printf("Written (%d) bytes to disk: %s",n,fullPath)
+	fmt.Printf("Written (%d) bytes to disk: %s\n",n,fullPath)
 
 
 	return nil
