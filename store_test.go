@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"testing"
+	"time"
 )
 
 func TestPathTransformFunc(t *testing.T){
@@ -31,10 +32,11 @@ func TestStoreDeleteKey(t *testing.T){
 	key := "43r43frerf"
 	data := []byte("hola hola")
 
-	if err:= s.writeStream(key,bytes.NewBuffer(data));err!=nil{
+	if err:= s.writeStream(key,bytes.NewReader(data));err!=nil{
 		t.Error(err)
 	}
 
+	time.Sleep(100 * time.Millisecond)
 	if err := s.delete(key);err!=nil{
 		t.Error(err)	
 	}
