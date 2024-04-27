@@ -37,7 +37,7 @@ func TestStoreDeleteKey(t *testing.T){
 	}
 
 	time.Sleep(100 * time.Millisecond)
-	if err := s.delete(key);err!=nil{
+	if err := s.Delete(key);err!=nil{
 		t.Error(err)	
 	}
 }
@@ -55,7 +55,11 @@ func TestStore(t *testing.T) {
 		t.Error(err)
 	}
 
-	r,err := s.read(key)
+	if ok := s.Has(key); !ok{
+		t.Errorf("expected to have key %s",key)
+	}
+
+	r,err := s.Read(key)
 	if err!=nil{
 		t.Error(err)
 	}
@@ -69,5 +73,5 @@ func TestStore(t *testing.T) {
 	if string(b) != string(data){
 		t.Errorf("want %s, have %s",data,b)
 	}
-	s.delete(key)
+	s.Delete(key)
 }
