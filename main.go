@@ -1,36 +1,35 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"time"
+
 	"github.com/kushagra-gupta01/Content_Addressable_Storage/p2p"
 )
 
-func OnPeer(peer p2p.Peer) error{
-	fmt.Printf("doing logic outside TCPTransport\n\n")
-	return nil
-}
-
 func main() {
-	tcpOpts := p2p.TCPTransportOpts{
-		ListenAddr:			":3000",
-		HandshakeFunc: 	p2p.NOPHandshakeFunc,
-		Decoder: 				p2p.Defaultdecoder{},
-		OnPeer: 				OnPeer,		
+	tcptransportOpts := p2p.TCPTransportOpts{
+		ListenAddr: ":3000",
+		HandshakeFunc: p2p.NOPHandshakeFunc,
+		Decoder: p2p.Defaultdecoder{},
+		//todo: onpeer func
 	}
-	
-	tr := p2p.NewTCPTransport(tcpOpts)	
+	tcpTransport:=p2p.NewTCPTransport(tcptransportOpts)
 
-	go func ()  {
-		for{
-			msg := <-tr.Consume()
-			fmt.Printf("%+v\n",msg)
-		}
+	fileServerOpts := FileServerOpts{
+		StorageRoot: "3000_network",
+		PathTransformFunc: CASpathTransformFunc,
+		Transport: tcpTransport,
+	}
+
+	s:= NewFileServer(fileServerOpts)
+
+	go func() {
+		time.Sleep(time.Second*5)
+		s.Stop()
 	}()
 
-	if err:= tr.ListenAndAccept();err!=nil{
+	if err:= s.Start();err!=nil{
 		log.Fatal(err)
 	}
-
-	select{}
 }
