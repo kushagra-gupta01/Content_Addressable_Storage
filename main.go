@@ -2,34 +2,36 @@ package main
 
 import (
 	"log"
-	"time"
-
 	"github.com/kushagra-gupta01/Content_Addressable_Storage/p2p"
 )
 
-func main() {
+func makeServer(listenAddr string,nodes ...string) *FileServer{
 	tcptransportOpts := p2p.TCPTransportOpts{
-		ListenAddr: ":3000",
+		ListenAddr: listenAddr,
 		HandshakeFunc: p2p.NOPHandshakeFunc,
 		Decoder: p2p.Defaultdecoder{},
-		//todo: onpeer func
 	}
 	tcpTransport:=p2p.NewTCPTransport(tcptransportOpts)
 
 	fileServerOpts := FileServerOpts{
-		StorageRoot: "3000_network",
-		PathTransformFunc: CASpathTransformFunc,
-		Transport: tcpTransport,
+		StorageRoot: 				listenAddr+"_network",
+		PathTransformFunc: 	CASpathTransformFunc,
+		Transport: 					tcpTransport,
+		BootstrapNodes: 		nodes,
 	}
 
-	s:= NewFileServer(fileServerOpts)
+	s:=NewFileServer(fileServerOpts)
+	tcpTransport.OnPeer = s.OnPeer
 
-	go func() {
-		time.Sleep(time.Second*5)
-		s.Stop()
+	return s
+}
+
+func main() {
+	s1 := makeServer(":3000","")
+	s2 := makeServer(":4000",":3000")
+	go func ()  {
+		log.Fatal(s1.Start())
 	}()
 
-	if err:= s.Start();err!=nil{
-		log.Fatal(err)
-	}
+	s2.Start()
 }
