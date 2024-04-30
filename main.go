@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"log"
+	"time"
 	"github.com/kushagra-gupta01/Content_Addressable_Storage/p2p"
 )
 
@@ -32,6 +34,10 @@ func main() {
 	go func ()  {
 		log.Fatal(s1.Start())
 	}()
-
-	s2.Start()
+	time.Sleep(4*time.Second)
+	go s2.Start()
+	time.Sleep(4*time.Second)
+	data:= bytes.NewReader([]byte("my data file is heree"))
+	s2.StoreData("myprivdata",data)
+	select{}
 }
