@@ -16,7 +16,7 @@ func makeServer(listenAddr string,nodes ...string) *FileServer{
 	tcpTransport:=p2p.NewTCPTransport(tcptransportOpts)
 
 	fileServerOpts := FileServerOpts{
-		StorageRoot: 				listenAddr+"_network",
+		StorageRoot: 				"3000"+"_network",
 		PathTransformFunc: 	CASpathTransformFunc,
 		Transport: 					tcpTransport,
 		BootstrapNodes: 		nodes,
@@ -37,7 +37,7 @@ func main() {
 	time.Sleep(4*time.Second)
 	go s2.Start()
 	time.Sleep(4*time.Second)
-	data:= bytes.NewReader([]byte("my data file is heree"))
+	data:= bytes.NewReader([]byte("my big data file here!"))
 	s2.StoreData("myprivdata",data)
 	select{}
 }
