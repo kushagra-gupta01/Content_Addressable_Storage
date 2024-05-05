@@ -1,7 +1,9 @@
 package main
 
 import (
-	"bytes"
+	// "bytes"
+	"fmt"
+	"io"
 	"log"
 	"time"
 	"github.com/kushagra-gupta01/Content_Addressable_Storage/p2p"
@@ -16,7 +18,7 @@ func makeServer(listenAddr string,nodes ...string) *FileServer{
 	tcpTransport:=p2p.NewTCPTransport(tcptransportOpts)
 
 	fileServerOpts := FileServerOpts{
-		StorageRoot: 				"3000"+"_network",
+		StorageRoot: 				listenAddr+"_network",
 		PathTransformFunc: 	CASpathTransformFunc,
 		Transport: 					tcpTransport,
 		BootstrapNodes: 		nodes,
@@ -37,7 +39,18 @@ func main() {
 	time.Sleep(4*time.Second)
 	go s2.Start()
 	time.Sleep(4*time.Second)
-	data:= bytes.NewReader([]byte("my big data file here!"))
-	s2.StoreData("myprivdata",data)
-	select{}
+	r,err:= s2.Get("coolPicture.jpg")
+	if err!=nil{
+		log.Fatal(err)
+	}
+	b,err:= io.ReadAll(r)
+	if err!=nil{
+		log.Fatal(err)
+	}
+	fmt.Println(string(b))
+	
+	// data:= bytes.NewReader([]byte("my big data file here!"))
+	// s2.Store("coolPicture.jpg",data)
+	// time.Sleep(time.Millisecond*5)	
+
 }

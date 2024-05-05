@@ -6,6 +6,7 @@ import "net"
 type Peer interface{
 	net.Conn
 	Send([]byte) error
+	CloseStream()
 }
 
 
@@ -13,6 +14,7 @@ type Peer interface{
 //between the nodes in the network. This can be of 
 //the form(TCP, UDP, WebSockets,...) 
 type Transport interface{
+	Addr() string
 	ListenAndAccept() error
 	Consume() <-chan RPC
 	Close()	error
